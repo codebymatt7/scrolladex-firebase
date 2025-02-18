@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Scrolladex Dashboard</title>
+  <style>
+    /* 
+      -- Modern, clean design variables --
+      Adjust colors, spacing, and transitions as needed.
+    */
+    :root {
+      --primary-color: #0077B5;
+      --primary-hover: #005f8d;
+      --bg-color: #f3f6f8;
+      --text-color: #333;
+      --card-bg: #fff;
+      --border-radius: 8px;
+      --transition-speed: 0.2s;
+      --box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    /* Base page styling */
+    body {
+      font-family: 'Open Sans', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    /* Top header bar */
+    .header {
+      background-color: var(--primary-color);
+      color: #fff;
+      padding: 16px;
+      text-align: center;
+      border-radius: var(--border-radius);
+      margin: 20px auto;
+      max-width: 900px;
+      box-shadow: var(--box-shadow);
+      transition: box-shadow var(--transition-speed);
+    }
+    .header:hover {
+      /* Subtle hover effect on the header */
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    /* Main container with white background and shadow */
+    .container {
+      max-width: 900px;
+      margin: 0 auto 40px;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 20px;
+      min-height: 70vh;
+    }
+
+    /* Auth Section */
+    .auth-section {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .auth-section h2 {
+      margin-top: 0;
+      color: var(--primary-color);
+    }
+    .auth-section input {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin: 8px 0;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: var(--border-radius);
+      transition: box-shadow var(--transition-speed), border-color var(--transition-speed);
+    }
+    .auth-section input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(0,119,181,0.2);
+    }
+    .auth-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    /* Buttons */
+    button {
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color var(--transition-speed), transform var(--transition-speed);
+    }
+    button:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Logout button with a slightly different color */
+    .logout-btn {
+      background-color: #999;
+      float: right;
+      margin-bottom: 20px;
+    }
+    .logout-btn:hover {
+      background-color: #666;
+    }
+
+    /* Dashboard Tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tabBtn {
+      background-color: var(--bg-color);
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+      padding: 8px 16px;
+      border-radius: 50px; /* pill shape */
+      transition: all var(--transition-speed);
+    }
+    .tabBtn:hover {
+      background-color: var(--primary-color);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .tabContent {
+      display: none;
+    }
+    .tabContent.active {
+      display: block;
+    }
+
+    /* Data sections */
+    .profile-section,
+    .interaction-section,
+    .followup-section {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      margin-bottom: 15px;
+      padding: 15px;
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      transition: box-shadow var(--transition-speed);
+    }
+    .profile-section:hover,
+    .interaction-section:hover,
+    .followup-section:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    .profile-details {
+      flex: 1;
+    }
+    .profile-section h3,
+    .interaction-section h3,
+    .followup-section h3 {
+      margin: 0 0 5px 0;
+      color: var(--primary-color);
+    }
+
+    /* Tag chips */
+    .tag-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 8px 0;
+    }
+    .tag-chip {
+      background-color: #eee;
+      border-radius: var(--border-radius);
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background-color var(--transition-speed), transform var(--transition-speed);
+    }
+    .tag-chip:hover {
+      background-color: #ccc;
+      transform: translateY(-1px);
+    }
+
+    /* Responsive layout: ensure container adjusts on smaller screens */
+    @media (max-width: 600px) {
+      .container {
+        margin: 10px;
+        padding: 15px;
+      }
+      .header {
+        margin: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header Bar -->
+  <div class="header">
+    <h1>Scrolladex Dashboard</h1>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- AUTH SECTION -->
+    <div id="authSection" class="auth-section">
+      <h2>Login / Sign Up</h2>
+      <input type="email" id="emailInput" placeholder="Email">
+      <input type="password" id="passwordInput" placeholder="Password">
+      <div class="auth-buttons">
+        <button id="signupBtn">Sign Up</button>
+        <button id="loginBtn">Log In</button>
+      </div>
+      <p id="authMessage" style="color:red; margin-top:10px;"></p>
+    </div>
+
+    <!-- DASHBOARD SECTION (hidden until logged in) -->
+    <button id="logoutBtn" class="logout-btn" style="display:none;">Log Out</button>
+    <div id="dashboard" style="display:none;">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tabBtn" id="profilesTabBtn">Profiles</button>
+        <button class="tabBtn" id="interactionsTabBtn">Interactions</button>
+        <button class="tabBtn" id="followupsTabBtn">Follow-Ups</button>
+      </div>
+
+      <!-- PROFILES TAB -->
+      <div id="profilesTab" class="tabContent">
+        <h2>Profiles</h2>
+        <div id="profilesContainer"></div>
+      </div>
+
+      <!-- INTERACTIONS TAB -->
+      <div id="interactionsTab" class="tabContent">
+        <h2>Interactions</h2>
+        <div id="interactionsContainer"></div>
+      </div>
+
+      <!-- FOLLOW-UPS TAB -->
+      <div id="followupsTab" class="tabContent">
+        <h2>Follow-Ups</h2>
+        <div id="followupsContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs (CDN) -->
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore.js"></script>
+
+  <script>
+    /**************************************************
+     * 1) HARDCODED FIREBASE CONFIG
+     **************************************************/
+    const firebaseConfig = {
+      apiKey: "AIzaSyC18cMxFprNyxuAWrMsuT07IXvObjOu34w",
+      authDomain: "scrolladex-3472b.firebaseapp.com",
+      projectId: "scrolladex-3472b",
+      storageBucket: "scrolladex-3472b.firebasestorage.app",
+      messagingSenderId: "385001116802",
+      appId: "1:385001116802:web:439d006f9cba011e90909b",
+      measurementId: "G-ZHJXN2JMG2"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const analytics = firebase.analytics(app);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    /**************************************************
+     * 2) AUTHENTICATION LOGIC
+     **************************************************/
+    const signupBtn = document.getElementById('signupBtn');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const authMessage = document.getElementById('authMessage');
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const authSection = document.getElementById('authSection');
+    const dashboard = document.getElementById('dashboard');
+
+    signupBtn.addEventListener('click', async () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+      if (!email || !password) {
+        authMessage.textContent = "Please enter email and password.";
+        return;
+      }
+      try {
+        await auth.createUserWithEmailAndPassword(email, password);
+        authMessage.style.color = 'green';
+        authMessage.textContent = 'Signup successful!';
+      } catch (error) {
+        authMessage.style.color = 'red';
+        authMessage.textContent = error.message;
+      }
+    });
+
+    loginBtn.addEventListener('click', async () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+      if (!email || !password) {
+        authMessage.textContent = "Please enter email and password.";
+        return;
+      }
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        authMessage.style.color = 'green';
+        authMessage.textContent = 'Login successful!';
+      } catch (error) {
+        authMessage.style.color = 'red';
+        authMessage.textContent = error.message;
+      }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await auth.signOut();
+      } catch (error) {
+        console.error("Logout error:", error);
+      }
+    });
+
+    // Listen for auth state changes
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        // Logged in
+        authSection.style.display = 'none';
+        logoutBtn.style.display = 'inline-block';
+        dashboard.style.display = 'block';
+        loadProfiles();
+        loadInteractions();
+        loadFollowups();
+      } else {
+        // Logged out
+        authSection.style.display = 'block';
+        logoutBtn.style.display = 'none';
+        dashboard.style.display = 'none';
+      }
+    });
+
+    /**************************************************
+     * 3) TAB LOGIC
+     **************************************************/
+    const profilesTabBtn = document.getElementById('profilesTabBtn');
+    const interactionsTabBtn = document.getElementById('interactionsTabBtn');
+    const followupsTabBtn = document.getElementById('followupsTabBtn');
+
+    const profilesTab = document.getElementById('profilesTab');
+    const interactionsTab = document.getElementById('interactionsTab');
+    const followupsTab = document.getElementById('followupsTab');
+
+    function showTab(tabName) {
+      // Hide all tabs
+      profilesTab.classList.remove('active');
+      interactionsTab.classList.remove('active');
+      followupsTab.classList.remove('active');
+
+      // Show only the selected tab
+      if (tabName === 'profiles') {
+        profilesTab.classList.add('active');
+      } else if (tabName === 'interactions') {
+        interactionsTab.classList.add('active');
+      } else if (tabName === 'followups') {
+        followupsTab.classList.add('active');
+      }
+    }
+
+    profilesTabBtn.addEventListener('click', () => showTab('profiles'));
+    interactionsTabBtn.addEventListener('click', () => showTab('interactions'));
+    followupsTabBtn.addEventListener('click', () => showTab('followups'));
+
+    // Default tab
+    showTab('profiles');
+
+    /**************************************************
+     * 4) DATA FETCH LOGIC
+     **************************************************/
+    // We'll assume subcollections:
+    //   users/{uid}/profiles
+    //   users/{uid}/interactions
+    //   users/{uid}/followups
+
+    async function loadProfiles() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const container = document.getElementById('profilesContainer');
+      container.innerHTML = 'Loading...';
+
+      try {
+        const snapshot = await db
+          .collection('users')
+          .doc(user.uid)
+          .collection('profiles')
+          .get();
+
+        if (snapshot.empty) {
+          container.innerHTML = '<p>No profiles found.</p>';
+          return;
+        }
+
+        let html = '';
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          html += `
+            <div class="profile-section">
+              ${
+                data.profilePic 
+                  ? `<img src="${data.profilePic}" alt="Profile Pic" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">` 
+                  : ''
+              }
+              <div class="profile-details">
+                <h3>${data.connectionName || 'Unknown'}</h3>
+                ${
+                  data.profileUrl 
+                    ? `<a href="${data.profileUrl}" target="_blank">${data.profileUrl}</a>` 
+                    : ''
+                }
+                <p>Notes: ${data.note || '(none)'}</p>
+                ${data.tags ? renderTags(data.tags) : ''}
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (error) {
+        container.innerHTML = 'Error loading profiles: ' + error.message;
+      }
+    }
+
+    async function loadInteractions() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const container = document.getElementById('interactionsContainer');
+      container.innerHTML = 'Loading...';
+
+      try {
+        const snapshot = await db
+          .collection('users')
+          .doc(user.uid)
+          .collection('interactions')
+          .get();
+
+        if (snapshot.empty) {
+          container.innerHTML = '<p>No interactions found.</p>';
+          return;
+        }
+
+        let html = '';
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const date = data.date ? new Date(data.date).toLocaleString() : '';
+          html += `
+            <div class="interaction-section">
+              <div style="flex:1;">
+                <h3>${date} - ${data.type || ''}</h3>
+                <p>Summary: ${data.summary || ''}</p>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (error) {
+        container.innerHTML = 'Error loading interactions: ' + error.message;
+      }
+    }
+
+    async function loadFollowups() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const container = document.getElementById('followupsContainer');
+      container.innerHTML = 'Loading...';
+
+      try {
+        const snapshot = await db
+          .collection('users')
+          .doc(user.uid)
+          .collection('followups')
+          .get();
+
+        if (snapshot.empty) {
+          container.innerHTML = '<p>No follow-ups found.</p>';
+          return;
+        }
+
+        let html = '';
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const date = data.date ? new Date(data.date).toLocaleString() : '';
+          html += `
+            <div class="followup-section">
+              <div style="flex:1;">
+                <h3>${date}${
+                  data.repeat && data.repeat !== 'none'
+                    ? ' (Repeat: '+data.repeat+')'
+                    : ''
+                }</h3>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (error) {
+        container.innerHTML = 'Error loading follow-ups: ' + error.message;
+      }
+    }
+
+    // Helper to render tags as chips
+    function renderTags(tagsString) {
+      const tags = tagsString.split(',').map(t => t.trim()).filter(Boolean);
+      if (!tags.length) return '';
+      let html = '<div class="tag-chips">';
+      tags.forEach(tag => {
+        html += `<div class="tag-chip">${tag}</div>`;
+      });
+      html += '</div>';
+      return html;
+    }
+  </script>
+
+  <!-- 
+    ********************************************************
+    * DEPLOYING TO FIREBASE HOSTING
+    * 1. npm i -g firebase-tools (if not installed)
+    * 2. firebase login
+    * 3. firebase init hosting
+    *    - pick your project
+    *    - choose '.' or 'public' as the hosting directory
+    *    - single-page app question: "No" (usually)
+    * 4. firebase deploy
+    * 5. Visit the URL shown in the terminal
+    ********************************************************
+  -->
+</body>
+</html>
